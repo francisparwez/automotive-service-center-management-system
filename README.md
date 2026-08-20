@@ -77,32 +77,35 @@ The main objectives of this project are to:
 
 # 🗄️ Database Structure
 
-The project contains **11 relational tables**:
+The project contains **11 relational tables**.
+
+The tables are created in the following order:
 
 ```text
 Customers
-    │
-    └── Vehicles
-            │
-            └── Appointments
-                    │
-                    └── WorkOrders
-                           │
-             ┌─────────────┴─────────────┐
-             │                           │
-             ▼                           ▼
-     WorkOrderServices               PartsUsed
-             │                           │
-             ▼                           ▼
-         Services                     Parts
-                                         │
-                                         ▼
-                                     Suppliers
-
-Employees ────────────────→ WorkOrders
-
-WorkOrders ────────────────→ Payments
+    ↓
+Vehicles
+    ↓
+Employees
+    ↓
+Services
+    ↓
+Suppliers
+    ↓
+Parts
+    ↓
+Appointments
+    ↓
+WorkOrders
+    ↓
+WorkOrderServices
+    ↓
+PartsUsed
+    ↓
+Payments
 ```
+
+The creation order matters because of the **foreign-key dependencies** between the tables. Parent tables must exist before child tables that reference them can be created.
 
 ---
 
@@ -191,6 +194,64 @@ Payments
 | WorkOrderServices | `WorkOrderServiceID` |
 | PartsUsed | `PartUsedID` |
 | Payments | `PaymentID` |
+
+---
+
+# 🏗️ Phase 1 + 2 Final Architecture
+
+The completed database architecture is:
+
+```text
+                         ┌──────────────┐
+                         │  Customers   │
+                         └──────┬───────┘
+                                │
+                                │ 1:M
+                                ▼
+                         ┌──────────────┐
+                         │   Vehicles   │
+                         └──────┬───────┘
+                                │
+                                │ 1:M
+                                ▼
+                         ┌──────────────┐
+                         │ Appointments │
+                         └──────┬───────┘
+                                │
+                                │ 1:0..1
+                                ▼
+                         ┌──────────────┐
+              ┌──────────│  WorkOrders  │──────────┐
+              │          └──────┬───────┘          │
+              │                 │                   │
+              │                 │                   │
+              ▼                 ▼                   ▼
+       ┌──────────────┐ ┌─────────────────┐  ┌────────────┐
+       │  Employees   │ │WorkOrderServices│  │  Payments  │
+       └──────────────┘ └────────┬────────┘  └────────────┘
+                                 │
+                                 ▼
+                          ┌──────────────┐
+                          │   Services   │
+                          └──────────────┘
+
+
+                         ┌──────────────┐
+                         │  Suppliers   │
+                         └──────┬───────┘
+                                │
+                                ▼
+                         ┌──────────────┐
+                         │    Parts     │
+                         └──────┬───────┘
+                                │
+                                ▼
+                         ┌──────────────┐
+                         │  PartsUsed   │
+                         └──────────────┘
+```
+
+The architecture separates master data, operational transactions, service records, inventory usage, and payments while maintaining referential integrity through primary and foreign keys.
 
 ---
 
@@ -1169,19 +1230,54 @@ This project demonstrates practical use of:
 
 ## Phase 2 — Database Creation
 
-- [ ] Create SQL Server database
-- [ ] Create tables
-- [ ] Add primary keys
-- [ ] Add foreign keys
-- [ ] Add constraints
+- [x] Create SQL Server database
+- [x] Create all 11 tables
+- [x] Add primary keys
+- [x] Add foreign keys
+- [x] Add `NOT NULL` constraints
+- [x] Add `UNIQUE` constraints
+- [x] Add `CHECK` constraints
+- [x] Add `DEFAULT` constraints
+- [x] Establish referential integrity
 
-## Phase 3 — Data Quality
+### Table Creation Order
+
+```text
+Customers
+    ↓
+Vehicles
+    ↓
+Employees
+    ↓
+Services
+    ↓
+Suppliers
+    ↓
+Parts
+    ↓
+Appointments
+    ↓
+WorkOrders
+    ↓
+WorkOrderServices
+    ↓
+PartsUsed
+    ↓
+Payments
+```
+
+The order matters because tables such as `Vehicles`, `Appointments`, `WorkOrders`, `Parts`, `WorkOrderServices`, `PartsUsed`, and `Payments` contain foreign keys referencing previously created tables.
+
+## Phase 3 — Data Quality, Validation & Optimization
 
 - [ ] Validate relationships
 - [ ] Identify missing values
 - [ ] Identify duplicates
 - [ ] Check invalid values
 - [ ] Check business-rule violations
+- [ ] Review existing constraints
+- [ ] Add indexes where justified
+- [ ] Validate query performance after indexing
 
 ## Phase 4 — Data Generation
 
@@ -1251,16 +1347,21 @@ This project demonstrates practical use of:
 - Table design
 - Primary keys
 - Foreign keys
-- Data validation constraints
-- Initial database schema
+- `NOT NULL` constraints
+- `UNIQUE` constraints
+- `CHECK` constraints
+- `DEFAULT` constraints
+- Referential integrity
+- Initial SQL Server database schema
+- All 11 tables created in dependency order
 
 ### Current Phase
 
-**Phase 3 — Data Quality & Validation**
+**Phase 3 — Data Quality, Validation & Optimization**
 
 ### Upcoming
 
-**Realistic Data Generation → SQL Data Analysis → Advanced SQL → Business Insights**
+**Reference Data & Realistic Data Generation → Data Quality Validation → SQL Data Analysis → Advanced SQL → Business Insights**
 
 ---
 
