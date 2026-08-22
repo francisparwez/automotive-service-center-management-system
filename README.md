@@ -1270,7 +1270,7 @@ The order matters because tables such as `Vehicles`, `Appointments`, `WorkOrders
 
 ## Phase 3 — Data Quality, Validation & Optimization
 
-- [ ] Validate relationships
+- [x] Validate relationships
 - [ ] Identify missing values
 - [ ] Identify duplicates
 - [ ] Check invalid values
